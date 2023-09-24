@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     // @ts-ignore
     await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: "carlos.dbarbosa0716@gmail.com",
+      to: email,
       subject: "Cambio de Contraseña",
       html: `<a href=${forgetUrl}>Cambiar contraseña<a>`,
     });
