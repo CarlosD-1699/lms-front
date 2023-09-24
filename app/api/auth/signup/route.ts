@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       }
     );
 
-    const forgetUrl = `http://localhost:3000/change-password?token=${token2}`;
+    const forgetUrl = `https://lms-front-xi.vercel.app/change-password?token=${token2}`;
 
     // @ts-ignore
     await resend.emails.send({
