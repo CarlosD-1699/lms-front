@@ -1,17 +1,16 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useAuth } from "@/app/_context/auth-context";
 
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,6 +19,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
 
 const formSchema = z
   .object({
@@ -41,17 +41,14 @@ const formSchema = z
       message: "Debes confirmar la contraseña",
     }),
   })
-  .superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password) {
-      ctx.addIssue({
-        code: "custom",
-        message: "La contraseña no coincide",
-      });
-    }
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "La contraseña no coincide",
+    path: ["confirmPassword"],
   });
 
 const Signup = () => {
   const router = useRouter();
+  const { signup, isAuthenticated } = useAuth();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,13 +58,15 @@ const Signup = () => {
     },
   });
 
-  const { isSubmitting, isValid } = form.formState;
+  const { isSubmitting } = form.formState;
+
+  useEffect(() => {
+    if (isAuthenticated) router.push(`/dashboard`);
+  }, [isAuthenticated]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(isSubmitting);
-      const response = await axios.post("/api/auth/signup", values);
-      router.push(`/dashboard`);
+      signup(values);
     } catch (error) {
       toast.error("Algo va mal");
     }

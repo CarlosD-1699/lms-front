@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useAuth } from "@/app/_context/auth-context";
 
 import {
   Form,
@@ -27,6 +28,13 @@ const formSchema = z.object({
   }),
 });
 
+interface Value {
+  userEmail: string;
+  values: {
+    title: string;
+  };
+}
+
 const CreatePage = () => {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -37,11 +45,21 @@ const CreatePage = () => {
   });
 
   const { isSubmitting, isValid } = form.formState;
+  const { user } = useAuth();
+
+  let userEmail: string | null;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    let info: Value;
     try {
-      const response = await axios.post("/api/course", values);
-      router.push(`/teacher/courses/${response.data.id}`);
+      if (user) {
+        userEmail = user.email;
+        info = { values, userEmail };
+        console.log(info);
+        const response = await axios.post("/api/courses", info);
+        router.push(`/teacher/courses/${response.data.id}`);
+        toast.success("Curso creado");
+      }
     } catch (error) {
       toast.error("Algo va mal");
     }

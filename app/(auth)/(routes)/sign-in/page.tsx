@@ -1,17 +1,16 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useAuth } from "@/app/_context/auth-context";
 
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,6 +19,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   email: z
@@ -40,6 +40,7 @@ const formSchema = z.object({
 
 const Signin = () => {
   const router = useRouter();
+  const { signin, isAuthenticated, user } = useAuth();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,13 +49,17 @@ const Signin = () => {
     },
   });
 
-  const { isSubmitting, isValid } = form.formState;
+  const { isSubmitting } = form.formState;
   const { register } = form;
+
+  useEffect(() => {
+    if (isAuthenticated) router.push(`/dashboard`);
+  }, [isAuthenticated]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await axios.post("/api/auth/signin", values);
-      router.push(`/dashboard`);
+      signin(values);
+      console.log(user);
     } catch (error) {
       toast.error("Algo va mal");
     }

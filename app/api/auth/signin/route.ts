@@ -59,7 +59,9 @@ export async function POST(req: Request) {
     // newHeaders.set("Set-Cookie", serialized);
 
     const response = {
-        message: 'Authenticated'
+        message: 'Authenticated',
+        email, 
+        password
     }
 
     return new Response(JSON.stringify(response),{

@@ -2,6 +2,7 @@ import ToastProvider from "@/components/providers/toaster-provider";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { AuthProvider } from "./_context/auth-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ToastProvider />
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

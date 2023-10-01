@@ -20,24 +20,29 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const formSchema = z.object({
-  newPassword: z
-    .string()
-    .min(1, {
-      message: "La contraseña es requerida",
-    })
-    .min(8, {
-      message: "La contraseña debe ser mayor a 8 caracteres",
-    }),
-  confirmPassword: z
-    .string()
-    .min(1, {
-      message: "La contraseña es requerida",
-    })
-    .min(8, {
-      message: "La contraseña debe ser mayor a 8 caracteres",
-    }),
-});
+const formSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(1, {
+        message: "La contraseña es requerida",
+      })
+      .min(8, {
+        message: "La contraseña debe ser mayor a 8 caracteres",
+      }),
+    confirmPassword: z
+      .string()
+      .min(1, {
+        message: "La contraseña es requerida",
+      })
+      .min(8, {
+        message: "La contraseña debe ser mayor a 8 caracteres",
+      }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "La contraseña no coincide",
+    path: ["confirmPassword"],
+  });
 
 const ChangePassword = () => {
   const router = useRouter();
