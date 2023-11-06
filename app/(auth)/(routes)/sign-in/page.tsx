@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useAuth } from "@/app/_context/auth-context";
+import { useEffect } from "react";
 
 import {
   Form,
@@ -19,7 +20,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
 
 const formSchema = z.object({
   email: z

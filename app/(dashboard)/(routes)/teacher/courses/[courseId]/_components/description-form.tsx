@@ -5,6 +5,7 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
+// import { Course } from "@prisma/client";
 
 import {
   Form,
@@ -15,27 +16,32 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/_context/auth-context";
+import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
 
-interface TitleFormProps {
+interface DescriptionFormProps {
   initialData: {
-    title: string;
+    description: string;
   };
+  // initialData: Course;
   courseId?: string | null;
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "El titulo es requerido",
+  description: z.string().min(1, {
+    message: "La descripción es requerida",
   }),
 });
 
-export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
+export const DescriptionForm = ({
+  initialData,
+  courseId,
+}: DescriptionFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
@@ -45,6 +51,9 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
+    // defaultValues: {
+    //   description: initialData?.description || "",
+    // },
   });
 
   const { isSubmitting, isValid } = form.formState;
@@ -64,7 +73,7 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Titulo del Curso
+        Descripción
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancelar</>
@@ -76,7 +85,16 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
           )}
         </Button>
       </div>
-      {!isEditing && <p className="text-sm mt-2">{initialData.title}</p>}
+      {!isEditing && (
+        <p
+          className={cn(
+            "text-sm mt-2",
+            !initialData.description && "text-slate-500 italic"
+          )}
+        >
+          {initialData.description || "No hay descripción"}
+        </p>
+      )}
       {isEditing && (
         <Form {...form}>
           <form
@@ -85,15 +103,14 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
           >
             <FormField
               control={form.control}
-              name="title"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel></FormLabel>
                   <FormControl>
-                    <Input
+                    <Textarea
                       disabled={isSubmitting}
-                      placeholder="p.ej. 'Desarrollo web avanzado'"
-                      type="text"
+                      placeholder="p.ej. 'Este curso es sobre...'"
                       {...field}
                     />
                   </FormControl>
@@ -113,4 +130,4 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   );
 };
 
-export default TitleForm;
+export default DescriptionForm;

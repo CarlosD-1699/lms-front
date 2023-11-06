@@ -6,11 +6,13 @@ import axios from "axios";
 import { LayoutDashboard } from "lucide-react";
 import { useEffect, useState } from "react";
 import TitleForm from "./_components/title-form";
+import DescriptionForm from "./_components/description-form";
+import { ImageForm } from "./_components/image-form";
 
 interface CourseData {
   id?: string | null;
-  title?: string;
-  description?: string | null;
+  title: string;
+  description: string;
   imageUrl?: string | null;
   price?: number | null;
   categoryId?: string | null;
@@ -18,7 +20,7 @@ interface CourseData {
 
 const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
   const { user } = useAuth();
-  const [courses, setCourses] = useState<CourseData>();
+  const [courses, setCourses] = useState<CourseData | null>(null);
 
   useEffect(() => {
     CourseInfoVerify({ params });
@@ -31,15 +33,14 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
   }) => {
     const info = { params, user };
     const response = await axios.post("/api/courses/coursesid", info);
-    console.log(response.data);
     setCourses(response.data);
     console.log(courses);
   };
 
   let requiredFields = [];
 
-  const title = courses?.title || "";
-  const description = courses?.description || "";
+  const title: string = courses?.title || "";
+  const description: string = courses?.description || "";
   const imageUrl = courses?.imageUrl || "";
   const price = courses?.price || "";
   const categoryId = courses?.categoryId || "";
@@ -67,8 +68,13 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
             <IconBadge icon={LayoutDashboard} />
             <h2 className="text-xl">Personaliza tu Curso</h2>
           </div>
-          <TitleForm
-            initialData={{ title: courses?.title }}
+          <TitleForm initialData={{ title: title }} courseId={courses?.id} />
+          <DescriptionForm
+            initialData={{ description: description }}
+            courseId={courses?.id}
+          />
+          <ImageForm
+            initialData={{ imageUrl: imageUrl }}
             courseId={courses?.id}
           />
         </div>

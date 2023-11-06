@@ -1,10 +1,14 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
-  const { user, params } = await req.json();
-  console.log(user, params);
+export async function PATCH(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
   try {
+    const { user, values } = await req.json();
+    const { courseId } = params;
+
     const userFound = await db.user.findUnique({
       where: { email: user?.email },
     });
@@ -14,21 +18,18 @@ export async function POST(req: Request) {
     if (userFound) {
       userId = userFound.id;
       if (!userId) {
-        return { redirect: { destination: "/" } };
+        return new NextResponse("Usuario no autorizado", { status: 401 });
       }
     }
 
-    const course = await db.course.findUnique({
-      where: { id: params.courseId },
+    const course = await db.course.update({
+      where: { id: courseId, userId },
+      data: { ...values },
     });
-
-    if (!course) {
-      return { redirect: { destination: "/" } };
-    }
 
     return NextResponse.json(course);
   } catch (error) {
-    console.log("[COURSESID]", error);
+    console.log("[COURSE_ID]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

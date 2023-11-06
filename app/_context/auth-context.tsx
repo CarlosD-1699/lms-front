@@ -50,7 +50,24 @@ export const AuthProvider = ({ children }: { children: any }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    // let item: string;
+    if (!user) {
+      const item: string = localStorage.getItem("user") || "";
+      const userLogged = !!item ? JSON.parse(item) : null;
+      setUser(userLogged);
+    }
+    // const userLogged = JSON.parse(item);
+    // if(!item == null || !item == undefined){
+    //   if (!userLogged == undefined || !userLogged == null) {
+    //     setUser(userLogged);
+    //   }
+    // }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("user", JSON.stringify(user));
+  }, [user]);
 
   const signin = async (user: { email: string; password: string }) => {
     try {

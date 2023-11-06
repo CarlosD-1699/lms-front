@@ -14,8 +14,11 @@ export async function middleware(request: NextRequest) {
 
     try {
       const { payload } = await jwtVerify(jwt, secret);
+      console.log(payload);
+      return NextResponse.next();
     } catch (error) {
       console.error(error);
+      return NextResponse.redirect(new URL("/sign-in", request.url));
     }
   }
 
